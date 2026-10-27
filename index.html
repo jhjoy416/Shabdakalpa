@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="bn" class="dark"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>শব্দকল্প - Shabdakalpa Writer's Studio</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@300;400;500;600;700&amp;family=Atma:wght@400;600&amp;family=Galada&amp;family=Lora:ital,wght@0,400;0,500;0,600;1,400&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;family=Tiro+Bangla:ital@0;1&amp;display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            950: '#0a0f1d',
+                            900: '#0f172a', // Deep Midnight Slate
+                            800: '#1e293b',
+                            700: '#334155'
+                        },
+                        emerald: {
+                            900: '#022c22',
+                            800: '#065f46', // Rich Emerald
+                            600: '#059669',
+                            400: '#34d399'
+                        },
+                        amber: {
+                            700: '#b45309',
+                            600: '#d97706', // Amber Gold
+                            500: '#f59e0b'
+                        },
+                        cream: {
+                            50: '#fdfbf7', // Warm Cream
+                            100: '#f8f4ec',
+                            200: '#f1ece4', // Soft Sand
+                            300: '#e5dec9'
+                        },
+                        rosewood: {
+                            400: '#e11d48',
+                            600: '#9f1239',
+                            800: '#881337',
+                            900: '#4c0519' // Deep Rosewood
+                        },
+                        sepia: {
+                            bg: '#fbf0d9',
+                            card: '#f4e4c1',
+                            text: '#433422',
+                            accent: '#8c501e'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', '"Anek Bangla"', 'sans-serif'],
+                        serif: ['Lora', '"Tiro Bangla"', 'serif'],
+                        literary: ['"Tiro Bangla"', 'Lora', 'serif'],
+                        creative: ['Galada', 'cursive']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Custom Theme Styles */
+        .theme-dark {
+            --bg-main: #0f172a;
+            --bg-sidebar: #0a0f1d;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-main: #f1ece4;
+            --text-muted: #94a3b8;
+            --editor-bg: #0f172a;
+            --accent-glow: rgba(217, 119, 6, 0.15);
+        }
+
+        .theme-light {
+            --bg-main: #fdfbf7;
+            --bg-sidebar: #f1ece4;
+            --bg-card: rgba(255, 255, 255, 0.85);
+            --border-color: rgba(15, 23, 42, 0.08);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --editor-bg: #fdfbf7;
+            --accent-glow: rgba(6, 95, 70, 0.1);
+        }
+
+        .theme-sepia {
+            --bg-main: #fbf0d9;
+            --bg-sidebar: #f4e4c1;
+            --bg-card: rgba(245, 230, 200, 0.85);
+            --border-color: rgba(140, 80, 30, 0.15);
+            --text-main: #433422;
+            --text-muted: #8c7355;
+            --editor-bg: #fbf0d9;
+            --accent-glow: rgba(140, 80, 30, 0.15);
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Glassmorphism Styling */
+        .glass-panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+        }
+
+        .glass-sidebar {
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(150, 150, 150, 0.2);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(150, 150, 150, 0.4);
+        }
+
+        /* Custom Editor Formatting */
+        [contenteditable]:focus {
+            outline: none;
+        }
+        [contenteditable]:empty:before {
+            content: attr(data-placeholder);
+            color: var(--text-muted);
+            opacity: 0.6;
+            cursor: text;
+        }
+
+        /* Ambient Audio Animation */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 0.4; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .audio-playing {
+            animation: pulse-ring 3s infinite ease-in-out;
+        }
+
+        /* Custom Tooltip */
+        .tooltip {
+            visibility: hidden;
+            position: absolute;
+            z-index: 50;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .has-tooltip:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:"Plus Jakarta Sans", "Anek Bangla", sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.inset-0{inset:0px}.right-0{right:0px}.z-10{z-index:10}.z-20{z-index:20}.z-50{z-index:50}.mx-1{margin-left:0.25rem;margin-right:0.25rem}.-mt-1{margin-top:-0.25rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.ml-1{margin-left:0.25rem}.mt-2{margin-top:0.5rem}.mt-4{margin-top:1rem}.mb-2{margin-bottom:0.5rem}.flex{display:flex}.hidden{display:none}.h-10{height:2.5rem}.h-12{height:3rem}.h-16{height:4rem}.h-2{height:0.5rem}.h-3{height:0.75rem}.h-4{height:1rem}.h-6{height:1.5rem}.h-9{height:2.25rem}.h-full{height:100%}.h-screen{height:100vh}.min-h-\[50vh\]{min-height:50vh}.w-24{width:6rem}.w-3{width:0.75rem}.w-36{width:9rem}.w-6{width:1.5rem}.w-72{width:18rem}.w-80{width:20rem}.w-9{width:2.25rem}.w-\[1px\]{width:1px}.w-full{width:100%}.max-w-3xl{max-width:48rem}.flex-1{flex:1 1 0%}.shrink-0{flex-shrink:0}.translate-x-0{--tw-translate-x:0px;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-translate-x-full{--tw-translate-x:-100%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.cursor-pointer{cursor:pointer}.flex-col{flex-direction:column}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.space-x-1 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.25rem * var(--tw-space-x-reverse));margin-left:calc(0.25rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-1\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.375rem * var(--tw-space-x-reverse));margin-left:calc(0.375rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-2 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.5rem * var(--tw-space-x-reverse));margin-left:calc(0.5rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-3 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.75rem * var(--tw-space-x-reverse));margin-left:calc(0.75rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-4 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(1rem * var(--tw-space-x-reverse));margin-left:calc(1rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-6 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(1.5rem * var(--tw-space-x-reverse));margin-left:calc(1.5rem * calc(1 - var(--tw-space-x-reverse)))}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-1\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.375rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.375rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.border-amber-400{--tw-border-opacity:1;border-color:rgb(251 191 36 / var(--tw-border-opacity, 1))}.border-amber-500\/10{border-color:rgb(245 158 11 / 0.1)}.border-amber-500\/20{border-color:rgb(245 158 11 / 0.2)}.border-amber-600\/30{border-color:rgb(217 119 6 / 0.3)}.border-slate-300{--tw-border-opacity:1;border-color:rgb(203 213 225 / var(--tw-border-opacity, 1))}.border-slate-700{--tw-border-opacity:1;border-color:rgb(51 65 85 / var(--tw-border-opacity, 1))}.border-transparent{border-color:transparent}.border-amber-600\/40{border-color:rgb(217 119 6 / 0.4)}.bg-amber-200{--tw-bg-opacity:1;background-color:rgb(253 230 138 / var(--tw-bg-opacity, 1))}.bg-amber-600{--tw-bg-opacity:1;background-color:rgb(217 119 6 / var(--tw-bg-opacity, 1))}.bg-cream-50{--tw-bg-opacity:1;background-color:rgb(253 251 247 / var(--tw-bg-opacity, 1))}.bg-emerald-800\/20{background-color:rgb(6 95 70 / 0.2)}.bg-slate-500\/30{background-color:rgb(100 116 139 / 0.3)}.bg-slate-700\/30{background-color:rgb(51 65 85 / 0.3)}.bg-slate-800\/10{background-color:rgb(30 41 59 / 0.1)}.bg-slate-800\/20{background-color:rgb(30 41 59 / 0.2)}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity, 1))}.bg-slate-900\/10{background-color:rgb(15 23 42 / 0.1)}.bg-slate-950\/60{background-color:rgb(10 15 29 / 0.6)}.bg-transparent{background-color:transparent}.bg-amber-600\/10{background-color:rgb(217 119 6 / 0.1)}.bg-gradient-to-br{background-image:linear-gradient(to bottom right, var(--tw-gradient-stops))}.bg-gradient-to-r{background-image:linear-gradient(to right, var(--tw-gradient-stops))}.from-emerald-600{--tw-gradient-from:#059669 var(--tw-gradient-from-position);--tw-gradient-to:rgb(5 150 105 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-emerald-800{--tw-gradient-from:#065f46 var(--tw-gradient-from-position);--tw-gradient-to:rgb(6 95 70 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.via-amber-600{--tw-gradient-to:rgb(217 119 6 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), #d97706 var(--tw-gradient-via-position), var(--tw-gradient-to)}.via-emerald-700{--tw-gradient-to:rgb(4 120 87 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), #047857 var(--tw-gradient-via-position), var(--tw-gradient-to)}.to-amber-600{--tw-gradient-to:#d97706 var(--tw-gradient-to-position)}.to-amber-700{--tw-gradient-to:#b45309 var(--tw-gradient-to-position)}.to-rosewood-600{--tw-gradient-to:#9f1239 var(--tw-gradient-to-position)}.to-rosewood-800{--tw-gradient-to:#881337 var(--tw-gradient-to-position)}.bg-clip-text{-webkit-background-clip:text;background-clip:text}.p-1{padding:0.25rem}.p-1\.5{padding:0.375rem}.p-2{padding:0.5rem}.p-3{padding:0.75rem}.p-4{padding:1rem}.p-6{padding:1.5rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}.py-8{padding-top:2rem;padding-bottom:2rem}.pb-2{padding-bottom:0.5rem}.pb-32{padding-bottom:8rem}.pr-1{padding-right:0.25rem}.text-left{text-align:left}.text-center{text-align:center}.font-creative{font-family:Galada, cursive}.font-literary{font-family:"Tiro Bangla", Lora, serif}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.font-sans{font-family:"Plus Jakarta Sans", "Anek Bangla", sans-serif}.font-serif{font-family:Lora, "Tiro Bangla", serif}.text-2xl{font-size:1.5rem;line-height:2rem}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-relaxed{line-height:1.625}.tracking-wide{letter-spacing:0.025em}.tracking-widest{letter-spacing:0.1em}.text-amber-600{--tw-text-opacity:1;color:rgb(217 119 6 / var(--tw-text-opacity, 1))}.text-cream-50{--tw-text-opacity:1;color:rgb(253 251 247 / var(--tw-text-opacity, 1))}.text-emerald-600{--tw-text-opacity:1;color:rgb(5 150 105 / var(--tw-text-opacity, 1))}.text-emerald-800{--tw-text-opacity:1;color:rgb(6 95 70 / var(--tw-text-opacity, 1))}.text-transparent{color:transparent}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.opacity-70{opacity:0.7}.opacity-75{opacity:0.75}.opacity-80{opacity:0.8}.opacity-0{opacity:0}.opacity-40{opacity:0.4}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.backdrop-blur-sm{--tw-backdrop-blur:blur(4px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition{transition-property:color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-300{transition-duration:300ms}.duration-500{transition-duration:500ms}.selection\:bg-amber-600\/30 *::selection{background-color:rgb(217 119 6 / 0.3)}.selection\:text-amber-500 *::selection{--tw-text-opacity:1;color:rgb(245 158 11 / var(--tw-text-opacity, 1))}.selection\:bg-amber-600\/30::selection{background-color:rgb(217 119 6 / 0.3)}.selection\:text-amber-500::selection{--tw-text-opacity:1;color:rgb(245 158 11 / var(--tw-text-opacity, 1))}.hover\:bg-amber-700:hover{--tw-bg-opacity:1;background-color:rgb(180 83 9 / var(--tw-bg-opacity, 1))}.hover\:bg-emerald-800\/10:hover{background-color:rgb(6 95 70 / 0.1)}.hover\:bg-emerald-800\/40:hover{background-color:rgb(6 95 70 / 0.4)}.hover\:bg-slate-800\/20:hover{background-color:rgb(30 41 59 / 0.2)}.hover\:bg-slate-800\/10:hover{background-color:rgb(30 41 59 / 0.1)}.hover\:text-amber-500:hover{--tw-text-opacity:1;color:rgb(245 158 11 / var(--tw-text-opacity, 1))}.hover\:text-rosewood-600:hover{--tw-text-opacity:1;color:rgb(159 18 57 / var(--tw-text-opacity, 1))}.hover\:opacity-90:hover{opacity:0.9}.hover\:shadow-lg:hover{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.hover\:brightness-105:hover{--tw-brightness:brightness(1.05);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.focus\:border-amber-600:focus{--tw-border-opacity:1;border-color:rgb(217 119 6 / var(--tw-border-opacity, 1))}.focus\:border-amber-600\/30:focus{border-color:rgb(217 119 6 / 0.3)}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}.group:hover .group-hover\:opacity-100{opacity:1}.dark\:from-emerald-400:is(.dark *){--tw-gradient-from:#34d399 var(--tw-gradient-from-position);--tw-gradient-to:rgb(52 211 153 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.dark\:via-amber-500:is(.dark *){--tw-gradient-to:rgb(245 158 11 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), #f59e0b var(--tw-gradient-via-position), var(--tw-gradient-to)}.dark\:to-rosewood-400:is(.dark *){--tw-gradient-to:#e11d48 var(--tw-gradient-to-position)}.dark\:text-amber-500:is(.dark *){--tw-text-opacity:1;color:rgb(245 158 11 / var(--tw-text-opacity, 1))}.dark\:text-emerald-400:is(.dark *){--tw-text-opacity:1;color:rgb(52 211 153 / var(--tw-text-opacity, 1))}@media (min-width: 640px){.sm\:block{display:block}.sm\:inline-block{display:inline-block}.sm\:inline{display:inline}.sm\:space-x-2 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.5rem * var(--tw-space-x-reverse));margin-left:calc(0.5rem * calc(1 - var(--tw-space-x-reverse)))}.sm\:space-x-3 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.75rem * var(--tw-space-x-reverse));margin-left:calc(0.75rem * calc(1 - var(--tw-space-x-reverse)))}}@media (min-width: 768px){.md\:relative{position:relative}.md\:flex{display:flex}.md\:px-16{padding-left:4rem;padding-right:4rem}.md\:text-4xl{font-size:2.25rem;line-height:2.5rem}.md\:text-lg{font-size:1.125rem;line-height:1.75rem}}@media (min-width: 1024px){.lg\:px-28{padding-left:7rem;padding-right:7rem}.lg\:px-6{padding-left:1.5rem;padding-right:1.5rem}}</style></head>
+<body class="font-sans h-screen overflow-hidden flex flex-col antialiased selection:bg-amber-600/30 selection:text-amber-500 theme-dark">
+
+    <!-- Top Navigation Header -->
+    <header class="h-16 glass-panel border-b flex items-center justify-between px-4 lg:px-6 z-20 shrink-0">
+        <!-- App Title & Sidebar Toggle -->
+        <div class="flex items-center space-x-3">
+            <button id="toggleSidebarBtn" class="p-2 rounded-lg hover:bg-slate-800/20 text-emerald-800 dark:text-emerald-400 focus:outline-none transition" title="মেগার সাইডবার টগল">
+                <i class="fa-solid fa-bars-staggered text-lg"></i>
+            </button>
+            <div class="flex items-center space-x-2">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-800 via-amber-600 to-rosewood-800 flex items-center justify-center text-cream-50 font-bold text-xl shadow-md border border-amber-500/20">
+                    শব্দ
+                </div>
+                <div>
+                    <h1 class="font-creative text-2xl tracking-wide bg-gradient-to-r from-emerald-800 via-amber-600 to-rosewood-600 dark:from-emerald-400 dark:via-amber-500 dark:to-rosewood-400 bg-clip-text text-transparent font-bold">
+                        শব্দকল্প
+                    </h1>
+                    <p class="text-[10px] text-muted tracking-widest uppercase font-semibold -mt-1 hidden sm:block opacity-75">Writer's Creative Realm</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle Quick Controls (Writing Goals & Ambient) -->
+        <div class="hidden md:flex items-center space-x-6">
+            <!-- Daily Goal Progress -->
+            <div class="flex items-center space-x-3 glass-panel px-3 py-1.5 rounded-full text-xs">
+                <div class="flex items-center space-x-1.5 text-amber-600 dark:text-amber-500">
+                    <i class="fa-solid fa-bullseye"></i>
+                    <span class="font-medium">আজকের লক্ষ্য:</span>
+                </div>
+                <div class="w-24 bg-slate-700/30 rounded-full h-2 overflow-hidden border border-amber-500/10">
+                    <div id="goalProgressBar" class="bg-gradient-to-r from-emerald-600 to-amber-600 h-full rounded-full transition-all duration-500" style="width: 10%;"></div>
+                </div>
+                <span id="goalText" class="font-mono text-[11px] font-semibold">48/500 শব্দ</span>
+                <button id="setGoalBtn" class="text-xs text-muted hover:text-amber-500 transition ml-1" title="লক্ষ্য পরিবর্তন করুন">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+            </div>
+
+            <!-- Ambient Sound Bar -->
+            <div class="flex items-center space-x-2 glass-panel px-3 py-1.5 rounded-full">
+                <i class="fa-solid fa-headphones text-emerald-800 dark:text-emerald-400 text-xs"></i>
+                <select id="ambientSoundSelect" class="bg-transparent text-xs focus:outline-none cursor-pointer pr-1">
+                    <option value="none">শব্দহীন পরিবেশ</option>
+                    <option value="rain">নীরব বৃষ্টি</option>
+                    <option value="forest">গভীর অরণ্য</option>
+                    <option value="waves">সমুদ্রের ঢেউ</option>
+                    <option value="cafe">কফি শপ</option>
+                </select>
+                <button id="ambientPlayBtn" class="w-6 h-6 rounded-full bg-emerald-800/20 text-emerald-800 dark:text-emerald-400 flex items-center justify-center text-[10px] hover:bg-emerald-800/40 transition">
+                    <i class="fa-solid fa-play" id="ambientIcon"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Right Side Actions (Themes, Backup, Focus Mode) -->
+        <div class="flex items-center space-x-2 sm:space-x-3">
+            <!-- Theme Switcher Dropdown -->
+            <div class="relative">
+                <button id="themeMenuBtn" class="p-2 rounded-xl hover:bg-slate-800/20 text-muted hover:text-main transition flex items-center space-x-1 text-xs">
+                    <i class="fa-solid fa-palette text-sm text-amber-600"></i>
+                    <span id="currentThemeName" class="hidden sm:inline-block">নাইট স্লেট</span>
+                    <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                </button>
+                <div id="themeDropdown" class="hidden absolute right-0 mt-2 w-36 glass-panel rounded-xl shadow-xl py-1 z-50 text-xs">
+                    <button data-theme="dark" class="theme-option w-full px-3 py-2 text-left flex items-center space-x-2 hover:bg-emerald-800/10">
+                        <span class="w-3 h-3 rounded-full bg-slate-900 border border-slate-700"></span>
+                        <span>নাইট স্লেট</span>
+                    </button>
+                    <button data-theme="light" class="theme-option w-full px-3 py-2 text-left flex items-center space-x-2 hover:bg-emerald-800/10">
+                        <span class="w-3 h-3 rounded-full bg-cream-50 border border-slate-300"></span>
+                        <span>উষ্ণ ক্রিম</span>
+                    </button>
+                    <button data-theme="sepia" class="theme-option w-full px-3 py-2 text-left flex items-center space-x-2 hover:bg-emerald-800/10">
+                        <span class="w-3 h-3 rounded-full bg-amber-200 border border-amber-400"></span>
+                        <span>সেপিয়া ক্লাসিক</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Export / Backup -->
+            <button id="exportDataBtn" class="p-2 rounded-xl hover:bg-slate-800/20 text-muted hover:text-main transition" title="ব্যাকআপ (JSON)">
+                <i class="fa-solid fa-download text-sm"></i>
+            </button>
+            <label id="importDataLabel" class="p-2 rounded-xl hover:bg-slate-800/20 text-muted hover:text-main transition cursor-pointer" title="রিস্টোর (JSON)">
+                <i class="fa-solid fa-upload text-sm"></i>
+                <input type="file" id="importDataInput" accept=".json" class="hidden">
+            </label>
+
+            <!-- Focus Mode Button -->
+            <button id="focusModeBtn" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-800 to-amber-700 text-cream-50 text-xs font-medium hover:opacity-90 shadow-md transition flex items-center space-x-1.5">
+                <i class="fa-solid fa-expand text-xs"></i>
+                <span class="hidden sm:inline">ফোকাস মোড</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Studio Workspace Container -->
+    <div class="flex flex-1 overflow-hidden relative">
+        
+        <!-- Left Sidebar Navigator -->
+        <aside id="sidebar" class="w-72 glass-sidebar flex flex-col transition-all duration-300 z-10 shrink-0 absolute md:relative h-full translate-x-0 -translate-x-full">
+            <!-- Sidebar Header & Create Action -->
+            <div class="p-4 border-b border-color">
+                <button id="createNewDocBtn" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-800 via-emerald-700 to-amber-600 text-cream-50 font-medium text-sm shadow-md hover:shadow-lg hover:brightness-105 transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-feather-pointed"></i>
+                    <span>নতুন লেখা তৈরি করুন</span>
+                </button>
+
+                <!-- Navigation Categories Tabs -->
+                <div class="flex items-center justify-between mt-4 bg-slate-800/10 p-1 rounded-xl text-xs">
+                    <button data-tab="all" class="nav-tab active-tab flex-1 py-1.5 rounded-lg text-center font-medium transition">সব</button>
+                    <button data-tab="novel" class="nav-tab flex-1 py-1.5 rounded-lg text-center font-medium transition bg-amber-600 text-cream-50 shadow-sm">উপন্যাস</button>
+                    <button data-tab="story" class="nav-tab flex-1 py-1.5 rounded-lg text-center font-medium transition">গল্প</button>
+                    <button data-tab="poem" class="nav-tab flex-1 py-1.5 rounded-lg text-center font-medium transition">কবিতা</button>
+                    <button data-tab="character" class="nav-tab flex-1 py-1.5 rounded-lg text-center font-medium transition" title="চরিত্র বিবরণী">চরিত্র</button>
+                </div>
+            </div>
+
+            <!-- Documents & Items List Container -->
+            <div id="documentList" class="flex-1 overflow-y-auto p-3 space-y-2"><div class="p-3 rounded-xl border transition cursor-pointer flex flex-col space-y-1.5 bg-amber-600/10 border-amber-600/40 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2 truncate">
+                            <i class="fa-solid fa-book text-amber-600 text-xs"></i>
+                            <h4 class="font-semibold text-xs truncate text-amber-600 dark:text-amber-500">মেঘের খেয়া</h4>
+                        </div>
+                        <button class="delete-doc-btn text-muted hover:text-rosewood-600 opacity-0 group-hover:opacity-100 transition text-xs p-1" data-id="doc-1">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-muted truncate">শরতের বিকেলেও রোদটা যেন একটু বেশি খাঁ খাঁ করছ</p>
+                </div></div>
+
+            <!-- Footer Stats Summary -->
+            <div class="p-3 border-t border-color text-[11px] text-muted flex items-center justify-between bg-slate-900/10">
+                <span>মোট রচনা: <strong id="totalDocCount" class="text-main">3</strong></span>
+                <span>সংরক্ষিত: <i class="fa-solid fa-cloud-check text-emerald-600"></i> Local</span>
+            </div>
+        </aside>
+
+        <!-- Center Main Writing Canvas / Editor -->
+        <main class="flex-1 flex flex-col h-full bg-main overflow-hidden relative">
+            
+            <!-- Editor Formatting & Customization Toolbar -->
+            <div id="editorToolbar" class="h-12 glass-panel border-b border-color px-4 flex items-center justify-between shrink-0 overflow-x-auto">
+                <!-- Font & Alignment Tools -->
+                <div class="flex items-center space-x-1 sm:space-x-2">
+                    <!-- Typography Selector -->
+                    <select id="fontFamilySelect" class="bg-transparent text-xs py-1 px-2 rounded-lg border border-color focus:outline-none font-medium cursor-pointer">
+                        <option value="font-literary">সাহিত্যানুগ ফন্ট (Tiro Serif)</option>
+                        <option value="font-sans">আধুনিক ফন্ট (Sans-serif)</option>
+                        <option value="font-creative">ক্লাসিক শৈলী (Galada)</option>
+                    </select>
+
+                    <div class="h-4 w-[1px] bg-slate-500/30 mx-1"></div>
+
+                    <!-- Text Formatting Action Buttons -->
+                    <button data-cmd="bold" class="format-btn p-1.5 rounded-lg hover:bg-slate-800/20 text-muted hover:text-main text-xs" title="Bold (Ctrl+B)">
+                        <i class="fa-solid fa-bold"></i>
+                    </button>
+                    <button data-cmd="italic" class="format-btn p-1.5 rounded-lg hover:bg-slate-800/20 text-muted hover:text-main text-xs" title="Italic (Ctrl+I)">
+                        <i class="fa-solid fa-italic"></i>
+                    </button>
+                    <button data-cmd="underline" class="format-btn p-1.5 rounded-lg hover:bg-slate-800/20 text-muted hover:text-main text-xs" title="Underline (Ctrl+U)">
+                        <i class="fa-solid fa-underline"></i>
+                    </button>
+                    <button data-cmd="insertUnorderedList" class="format-btn p-1.5 rounded-lg hover:bg-slate-800/20 text-muted hover:text-main text-xs" title="List">
+                        <i class="fa-solid fa-list-ul"></i>
+                    </button>
+
+                    <div class="h-4 w-[1px] bg-slate-500/30 mx-1"></div>
+
+                    <!-- Text Alignment -->
+                    <button data-cmd="justifyLeft" class="format-btn p-1.5 rounded-lg hover:bg-slate-800/20 text-muted hover:text-main text-xs" title="Align Left">
+                        <i class="fa-solid fa-align-left"></i>
+                    </button>
+                    <button data-cmd="justifyCenter" class="format-btn p-1.5 rounded-lg hover:bg-slate-800/20 text-muted hover:text-main text-xs" title="Align Center">
+                        <i class="fa-solid fa-align-center"></i>
+                    </button>
+                    <button data-cmd="justifyRight" class="format-btn p-1.5 rounded-lg hover:bg-slate-800/20 text-muted hover:text-main text-xs" title="Align Right">
+                        <i class="fa-solid fa-align-right"></i>
+                    </button>
+                </div>
+
+                <!-- Document Category Selector & Status -->
+                <div class="flex items-center space-x-3">
+                    <select id="docCategorySelect" class="bg-transparent text-xs py-1 px-2.5 rounded-lg border border-amber-600/30 text-amber-600 dark:text-amber-500 font-medium focus:outline-none cursor-pointer">
+                        <option value="novel">📖 উপন্যাস চ্যাপ্টার</option>
+                        <option value="story">✍️ ছোটগল্প</option>
+                        <option value="poem">📜 কবিতা</option>
+                        <option value="character">👤 চরিত্র কার্ড</option>
+                        <option value="note">📝 নোট / খসড়া</option>
+                    </select>
+
+                    <div id="saveStatus" class="text-[11px] text-emerald-600 dark:text-emerald-400 flex items-center space-x-1 opacity-80"><i class="fa-solid fa-spinner fa-spin"></i> <span>সেভ হচ্ছে...</span></div>
+                </div>
+            </div>
+
+            <!-- Editable Studio Document Writing Space -->
+            <div class="flex-1 overflow-y-auto px-4 py-8 md:px-16 lg:px-28 flex justify-center">
+                <div class="w-full max-w-3xl flex flex-col space-y-4">
+                    <!-- Title Input Field -->
+                    <input type="text" id="documentTitleInput" placeholder="শিরোনাম লিখুন..." class="w-full bg-transparent text-2xl md:text-4xl font-bold border-b border-transparent focus:border-amber-600/30 pb-2 focus:outline-none transition font-serif placeholder-muted/40">
+
+                    <!-- Main Literary Editor -->
+                    <div id="mainEditor" contenteditable="true" data-placeholder="এখানে আপনার সৃষ্টিশীল লেখা শুরু করুন..." class="w-full flex-1 text-base md:text-lg leading-relaxed focus:outline-none min-h-[50vh] pb-32 font-literary"><p>শরতের বিকেলেও রোদটা যেন একটু বেশি খাঁ খাঁ করছিল। নদীর ধারের কাশবন বাতাসে দোল খাচ্ছে ঠিকই, কিন্তু সোমনাথের মন আজকে স্থির নেই। গত তিন দিন ধরে যে চিঠিটার অপেক্ষায় সে ডাকঘরের বারান্দায় বসে থাকে, সেটা আজও আসেনি।</p><p>বুকের ভেতর জমে থাকা শব্দগুলো কেমন যেন গুটিসুটি মেরে বসে আছে।</p></div>
+                </div>
+            </div>
+
+            <!-- Bottom Live Word Counter & Stats Bar -->
+            <div class="h-10 glass-panel border-t border-color px-6 flex items-center justify-between text-xs text-muted shrink-0 z-10">
+                <div class="flex items-center space-x-4">
+                    <span>শব্দ সংখ্যা: <strong id="wordCountDisplay" class="text-main font-mono text-sm">৪৮</strong></span>
+                    <span>বর্ণ: <strong id="charCountDisplay" class="text-main font-mono text-sm">২৬৮</strong></span>
+                    <span class="hidden sm:inline">পড়ার সময়: <strong id="readTimeDisplay" class="text-main font-mono">১ মিনিট</strong></span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span id="lastSavedTime" class="text-[10px] opacity-70">শেষ আপডেট: এইমাত্র</span>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Daily Goal Modal -->
+    <div id="goalModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="glass-panel p-6 rounded-2xl w-80 shadow-2xl border border-amber-600/30">
+            <h3 class="text-lg font-bold mb-3 flex items-center space-x-2">
+                <i class="fa-solid fa-bullseye text-amber-600"></i>
+                <span>দৈনিক লেখার লক্ষ্য</span>
+            </h3>
+            <p class="text-xs text-muted mb-4">প্রতিদিন আপনি কত শব্দ লিখতে চান সেটি নির্ধারণ করুন।</p>
+            <input type="number" id="goalInputNumber" class="w-full px-3 py-2 rounded-xl bg-slate-800/20 border border-color mb-4 text-center font-mono font-bold text-lg focus:outline-none focus:border-amber-600" min="50" max="20000" step="50">
+            <div class="flex justify-end space-x-2">
+                <button id="closeGoalModal" class="px-4 py-1.5 rounded-xl hover:bg-slate-800/20 text-xs">বাতিল</button>
+                <button id="saveGoalBtn" class="px-4 py-1.5 rounded-xl bg-amber-600 text-cream-50 text-xs font-medium hover:bg-amber-700 transition">সংরক্ষণ করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // --- State Management ---
+        const DEFAULT_DOCUMENTS = [
+            {
+                id: 'doc-1',
+                title: 'মেঘের খেয়া',
+                category: 'novel',
+                content: '<p>শরতের বিকেলেও রোদটা যেন একটু বেশি খাঁ খাঁ করছিল। নদীর ধারের কাশবন বাতাসে দোল খাচ্ছে ঠিকই, কিন্তু সোমনাথের মন আজকে স্থির নেই। গত তিন দিন ধরে যে চিঠিটার অপেক্ষায় সে ডাকঘরের বারান্দায় বসে থাকে, সেটা আজও আসেনি।</p><p>বুকের ভেতর জমে থাকা শব্দগুলো কেমন যেন গুটিসুটি মেরে বসে আছে।</p>',
+                updatedAt: new Date().toISOString()
+            },
+            {
+                id: 'doc-2',
+                title: 'একাকীত্বের ব্যাকরণ',
+                category: 'poem',
+                content: '<p>নীরবতার নিজস্ব এক ভাষা থাকে,<br>যেখানে শব্দদের ডানা মেলতে হয় না।<br>তুমি আমি হেঁটে যাই সমান্তরাল লাইনে,<br>কোনোদিন দেখা না হওয়ার শর্ত মেনে।</p>',
+                updatedAt: new Date().toISOString()
+            },
+            {
+                id: 'doc-3',
+                title: 'প্রফেসর সোমনাথ চট্টোপাধ্যায়',
+                category: 'character',
+                content: '<p><strong>বয়স:</strong> ৪৮ বছর<br><strong>পেশা:</strong> ইতিহাস বিভাগের শিক্ষক<br><strong>বৈশিষ্ট্য:</strong> চশমার ফাঁক দিয়ে তাকানোর অভ্যাস, সবসময় সাথে একটি চামড়ার পুরনো ডায়েরি রাখেন। চা খাবেন চিনি ছাড়া।</p>',
+                updatedAt: new Date().toISOString()
+            }
+        ];
+
+        let state = {
+            documents: JSON.parse(localStorage.getItem('shabdakalpa_docs')) || DEFAULT_DOCUMENTS,
+            activeDocId: null,
+            dailyGoal: parseInt(localStorage.getItem('shabdakalpa_goal')) || 500,
+            theme: localStorage.getItem('shabdakalpa_theme') || 'dark',
+            activeTab: 'all',
+            ambientSound: 'none',
+            isPlayingAudio: false
+        };
+
+        let currentAudio = null;
+
+        // Sound Synthesis / Audio Context for Ambient Backgrounds (Offline Safe)
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let ambientGainNode = null;
+        let ambientSourceNode = null;
+
+        // --- DOM Selectors ---
+        const documentList = document.getElementById('documentList');
+        const documentTitleInput = document.getElementById('documentTitleInput');
+        const mainEditor = document.getElementById('mainEditor');
+        const wordCountDisplay = document.getElementById('wordCountDisplay');
+        const charCountDisplay = document.getElementById('charCountDisplay');
+        const readTimeDisplay = document.readTimeDisplay || document.getElementById('readTimeDisplay');
+        const saveStatus = document.getElementById('saveStatus');
+        const goalProgressBar = document.getElementById('goalProgressBar');
+        const goalText = document.getElementById('goalText');
+        const totalDocCount = document.getElementById('totalDocCount');
+        const docCategorySelect = document.getElementById('docCategorySelect');
+        const fontFamilySelect = document.getElementById('fontFamilySelect');
+        const sidebar = document.getElementById('sidebar');
+
+        // --- Initialization ---
+        window.addEventListener('DOMContentLoaded', () => {
+            applyTheme(state.theme);
+            if (state.documents.length > 0) {
+                state.activeDocId = state.documents[0].id;
+            } else {
+                createNewDocument();
+            }
+            renderDocumentList();
+            loadActiveDocument();
+            updateStats();
+            setupEventListeners();
+        });
+
+        // --- Core Functions ---
+
+        function renderDocumentList() {
+            documentList.innerHTML = '';
+            
+            const filteredDocs = state.documents.filter(doc => {
+                if (state.activeTab === 'all') return true;
+                return doc.category === state.activeTab;
+            });
+
+            totalDocCount.textContent = state.documents.length;
+
+            if (filteredDocs.length === 0) {
+                documentList.innerHTML = `
+                    <div class="text-center py-8 text-muted text-xs">
+                        <i class="fa-solid fa-box-open text-2xl mb-2 opacity-40"></i>
+                        <p>কোনো লেখা পাওয়া যায়নি</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filteredDocs.forEach(doc => {
+                const isActive = doc.id === state.activeDocId;
+                const card = document.createElement('div');
+                card.className = `p-3 rounded-xl border transition cursor-pointer flex flex-col space-y-1.5 ${
+                    isActive 
+                        ? 'bg-amber-600/10 border-amber-600/40 shadow-sm' 
+                        : 'hover:bg-slate-800/10 border-transparent'
+                }`;
+
+                // Category Icon
+                let catIcon = 'fa-file-lines';
+                if (doc.category === 'novel') catIcon = 'fa-book';
+                if (doc.category === 'poem') catIcon = 'fa-feather';
+                if (doc.category === 'character') catIcon = 'fa-user-ninja';
+                if (doc.category === 'story') catIcon = 'fa-scroll';
+
+                const excerpt = doc.content.replace(/<[^>]*>?/gm, '').slice(0, 45) || 'ফাঁকা নথি...';
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2 truncate">
+                            <i class="fa-solid ${catIcon} text-amber-600 text-xs"></i>
+                            <h4 class="font-semibold text-xs truncate ${isActive ? 'text-amber-600 dark:text-amber-500' : 'text-main'}">${doc.title || 'শিরোনামহীন'}</h4>
+                        </div>
+                        <button class="delete-doc-btn text-muted hover:text-rosewood-600 opacity-0 group-hover:opacity-100 transition text-xs p-1" data-id="${doc.id}">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-muted truncate">${excerpt}</p>
+                `;
+
+                card.addEventListener('click', (e) => {
+                    if (e.target.closest('.delete-doc-btn')) {
+                        e.stopPropagation();
+                        deleteDocument(doc.id);
+                        return;
+                    }
+                    state.activeDocId = doc.id;
+                    renderDocumentList();
+                    loadActiveDocument();
+                });
+
+                documentList.appendChild(card);
+            });
+        }
+
+        function loadActiveDocument() {
+            const doc = state.documents.find(d => d.id === state.activeDocId);
+            if (!doc) return;
+
+            documentTitleInput.value = doc.title || '';
+            mainEditor.innerHTML = doc.content || '';
+            docCategorySelect.value = doc.category || 'novel';
+            
+            updateStats();
+        }
+
+        function createNewDocument() {
+            const newDoc = {
+                id: 'doc-' + Date.now(),
+                title: 'নতুন লেখা',
+                category: state.activeTab !== 'all' ? state.activeTab : 'novel',
+                content: '',
+                updatedAt: new Date().toISOString()
+            };
+
+            state.documents.unshift(newDoc);
+            state.activeDocId = newDoc.id;
+            saveStateToStorage();
+            renderDocumentList();
+            loadActiveDocument();
+            documentTitleInput.focus();
+        }
+
+        function deleteDocument(id) {
+            if (state.documents.length <= 1) {
+                alert('কমপক্ষে একটি রচনা থাকা প্রয়োজনীয়।');
+                return;
+            }
+            state.documents = state.documents.filter(d => d.id !== id);
+            if (state.activeDocId === id) {
+                state.activeDocId = state.documents[0].id;
+            }
+            saveStateToStorage();
+            renderDocumentList();
+            loadActiveDocument();
+        }
+
+        function saveActiveDocument() {
+            const doc = state.documents.find(d => d.id === state.activeDocId);
+            if (!doc) return;
+
+            doc.title = documentTitleInput.value;
+            doc.content = mainEditor.innerHTML;
+            doc.category = docCategorySelect.value;
+            doc.updatedAt = new Date().toISOString();
+
+            saveStateToStorage();
+            renderDocumentList();
+
+            // Save indicator animation
+            saveStatus.classList.remove('opacity-0');
+            saveStatus.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>সংরক্ষিত</span>`;
+        }
+
+        function saveStateToStorage() {
+            localStorage.setItem('shabdakalpa_docs', JSON.stringify(state.documents));
+            localStorage.setItem('shabdakalpa_goal', state.dailyGoal.toString());
+            localStorage.setItem('shabdakalpa_theme', state.theme);
+        }
+
+        // --- Stats & Goals Calculation ---
+        function updateStats() {
+            const text = mainEditor.innerText || '';
+            
+            // Word counter for Bengali and English
+            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+            const chars = text.length;
+            const readingTime = Math.ceil(words / 120); // ~120 wpm reading pace
+
+            wordCountDisplay.textContent = words.toLocaleString('bn-BD');
+            charCountDisplay.textContent = chars.toLocaleString('bn-BD');
+            readTimeDisplay.textContent = `${readingTime.toLocaleString('bn-BD')} মিনিট`;
+
+            // Daily Goal progress update
+            const progress = Math.min(100, Math.round((words / state.dailyGoal) * 100));
+            goalProgressBar.style.width = `${progress}%`;
+            goalText.textContent = `${words}/${state.dailyGoal} শব্দ`;
+        }
+
+        // --- Theme Switcher ---
+        function applyTheme(themeName) {
+            state.theme = themeName;
+            document.body.classList.remove('theme-dark', 'theme-light', 'theme-sepia');
+            document.body.classList.add(`theme-${themeName}`);
+            
+            const themeLabels = { dark: 'নাইট স্লেট', light: 'উষ্ণ ক্রিম', sepia: 'সেপিয়া' };
+            document.getElementById('currentThemeName').textContent = themeLabels[themeName] || 'থিম';
+            saveStateToStorage();
+        }
+
+        // --- Ambient Synthesizer (Offline Noise Generator) ---
+        function toggleAmbientAudio() {
+            if (state.isPlayingAudio) {
+                stopAmbientAudio();
+            } else {
+                startAmbientAudio();
+            }
+        }
+
+        function startAmbientAudio() {
+            if (state.ambientSound === 'none') return;
+            
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+
+            const bufferSize = audioContext.sampleRate * 2;
+            const noiseBuffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+
+            // Generate relaxing noise pattern
+            for (let i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 2 - 1;
+            }
+
+            ambientSourceNode = audioContext.createBufferSource();
+            ambientSourceNode.buffer = noiseBuffer;
+            ambientSourceNode.loop = true;
+
+            // Filter for soft tone
+            const filter = audioContext.createBiquadFilter();
+            filter.type = state.ambientSound === 'rain' ? 'lowpass' : 'bandpass';
+            filter.frequency.setValueAtTime(400, audioContext.currentTime);
+
+            ambientGainNode = audioContext.createGain();
+            ambientGainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+
+            ambientSourceNode.connect(filter);
+            filter.connect(ambientGainNode);
+            ambientGainNode.connect(audioContext.destination);
+
+            ambientSourceNode.start();
+            state.isPlayingAudio = true;
+
+            document.getElementById('ambientIcon').className = 'fa-solid fa-pause';
+            document.getElementById('ambientPlayBtn').classList.add('audio-playing');
+        }
+
+        function stopAmbientAudio() {
+            if (ambientSourceNode) {
+                ambientSourceNode.stop();
+                ambientSourceNode.disconnect();
+                ambientSourceNode = null;
+            }
+            state.isPlayingAudio = false;
+            document.getElementById('ambientIcon').className = 'fa-solid fa-play';
+            document.getElementById('ambientPlayBtn').classList.remove('audio-playing');
+        }
+
+        // --- Event Listeners Setup ---
+        function setupEventListeners() {
+            // Live Editor Save and Counter
+            let debounceTimer;
+            mainEditor.addEventListener('input', () => {
+                updateStats();
+                saveStatus.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>সেভ হচ্ছে...</span>`;
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(saveActiveDocument, 800);
+            });
+
+            documentTitleInput.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(saveActiveDocument, 500);
+            });
+
+            docCategorySelect.addEventListener('change', saveActiveDocument);
+
+            // New Document Button
+            document.getElementById('createNewDocBtn').addEventListener('click', createNewDocument);
+
+            // Format Buttons (Bold, Italic, List etc.)
+            document.querySelectorAll('.format-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const cmd = btn.dataset.cmd;
+                    document.execCommand(cmd, false, null);
+                    mainEditor.focus();
+                });
+            });
+
+            // Font Selector Change
+            fontFamilySelect.addEventListener('change', (e) => {
+                mainEditor.classList.remove('font-literary', 'font-sans', 'font-creative');
+                mainEditor.classList.add(e.target.value);
+            });
+
+            // Navigation Category Tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('bg-amber-600', 'text-cream-50', 'shadow-sm'));
+                    tab.classList.add('bg-amber-600', 'text-cream-50', 'shadow-sm');
+                    state.activeTab = tab.dataset.tab;
+                    renderDocumentList();
+                });
+            });
+
+            // Toggle Sidebar
+            document.getElementById('toggleSidebarBtn').addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+            });
+
+            // Theme Menu Toggle
+            const themeMenuBtn = document.getElementById('themeMenuBtn');
+            const themeDropdown = document.getElementById('themeDropdown');
+            themeMenuBtn.addEventListener('click', () => themeDropdown.classList.toggle('hidden'));
+            
+            document.querySelectorAll('.theme-option').forEach(opt => {
+                opt.addEventListener('click', () => {
+                    applyTheme(opt.dataset.theme);
+                    themeDropdown.classList.add('hidden');
+                });
+            });
+
+            // Ambient Sound Dropdown & Play Switcher
+            document.getElementById('ambientSoundSelect').addEventListener('change', (e) => {
+                state.ambientSound = e.target.value;
+                if (state.isPlayingAudio) {
+                    stopAmbientAudio();
+                    startAmbientAudio();
+                }
+            });
+            document.getElementById('ambientPlayBtn').addEventListener('click', toggleAmbientAudio);
+
+            // Goal Modal Handling
+            const goalModal = document.getElementById('goalModal');
+            document.getElementById('setGoalBtn').addEventListener('click', () => {
+                document.getElementById('goalInputNumber').value = state.dailyGoal;
+                goalModal.classList.remove('hidden');
+            });
+            document.getElementById('closeGoalModal').addEventListener('click', () => goalModal.classList.add('hidden'));
+            document.getElementById('saveGoalBtn').addEventListener('click', () => {
+                const val = parseInt(document.getElementById('goalInputNumber').value);
+                if (val && val > 0) {
+                    state.dailyGoal = val;
+                    saveStateToStorage();
+                    updateStats();
+                    goalModal.classList.add('hidden');
+                }
+            });
+
+            // Focus Mode Toggle (Fullscreen Writing)
+            document.getElementById('focusModeBtn').addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen();
+                } else {
+                    document.exitFullscreen();
+                }
+            });
+
+            // JSON Export & Import (Backup)
+            document.getElementById('exportDataBtn').addEventListener('click', () => {
+                const blob = new Blob([JSON.stringify(state.documents, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `shabdakalpa_backup_${new Date().toISOString().slice(0, 10)}.json`;
+                a.click();
+            });
+
+            document.getElementById('importDataInput').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const importedDocs = JSON.parse(event.target.result);
+                        if (Array.isArray(importedDocs)) {
+                            state.documents = importedDocs;
+                            state.activeDocId = importedDocs[0]?.id || null;
+                            saveStateToStorage();
+                            renderDocumentList();
+                            loadActiveDocument();
+                        }
+                    } catch (err) {
+                        alert('JSON ফাইলে ত্রুটি রয়েছে। সঠিক ব্যাকআপ ফাইল প্রদান করুন।');
+                    }
+                };
+                reader.readAsText(file);
+            });
+        }
+    </script>
+
+</body></html>
